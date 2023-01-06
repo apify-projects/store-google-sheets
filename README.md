@@ -57,6 +57,8 @@ If you are using this actor for the first time, you have to log in with the Goog
 
 After authorization, tokens are stored in your key-value store, and you don't need to authorize again. So, after the first usage, you can fully automate the actor.
 
+**Please note that Google gradually makes it harder to authenticate and it is possible it will not work for you at all. Try a different gmail, a company one rather then personal, or use directly our [integration](https://apify.com/integrations) for Google drive.**
+
 ## Public spreadsheet (no authorization)
 If you don't mind publishing your spreadsheet, you can use this actor without authorization for **read mode**. 
 Simply set the input **publicSpreadsheet** to **"true"**. 
