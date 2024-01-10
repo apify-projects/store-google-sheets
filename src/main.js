@@ -24,6 +24,11 @@ Apify.main(async () => {
         input.datasetId = input.resource.defaultDatasetId;
     }
 
+    // Now it can also be wrapped in payload
+    if (!input.datasetId && input?.payload?.resource?.defaultDatasetId) {
+        input.datasetId = input.payload.resource.defaultDatasetId;
+    }
+
     const {
         spreadsheetId,
         publicSpreadsheet = false,
