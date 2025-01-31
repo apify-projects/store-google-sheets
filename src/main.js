@@ -32,7 +32,7 @@ Apify.main(async () => {
     const {
         spreadsheetId,
         publicSpreadsheet = false,
-        mode,
+        mode = 'append',
         datasetId,
         deduplicateByField,
         deduplicateByEquality,
