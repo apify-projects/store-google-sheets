@@ -8,7 +8,8 @@
             "title": "Mode",
             "type": "string",
             "description": "What should the actor do",
-            "enum": ["append", "replace", "modify", "read", "load backup"]
+            "enum": ["append", "replace", "modify", "read", "load backup"],
+            "default": "append"
         },
         "spreadsheetId": {
             "title": "Spreadsheet id",

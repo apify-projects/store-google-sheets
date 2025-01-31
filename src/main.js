@@ -143,7 +143,7 @@ Apify.main(async () => {
     const newObjects = rawData.length > 0
         ? rawData
         : await loadFromApify({ mode, datasetId, limit, offset });
-    log.info('Data loaded from Apify...');
+    log.info(`Data loaded from Apify. Loaded ${newObjects?.length} rows`);
 
     // Load data from spreadsheet
     log.info('\nPHASE - LOADING DATA FROM SPREADSHEET\n');
