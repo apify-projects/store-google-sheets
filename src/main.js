@@ -1,7 +1,6 @@
 const Apify = require('apify');
 const { google } = require('googleapis');
 const { OAuth2Client } = require('google-auth-library');
-const fetch = require('node-fetch');
 
 const processMode = require('./modes.js');
 const { loadFromApify, loadFromSpreadsheet } = require('./loaders.js');
@@ -9,6 +8,14 @@ const upload = require('./upload.js');
 const { saveBackup, retryingRequest, createSheetRequest } = require('./utils.js');
 const validateAndParseInput = require('./validate-parse-input.js');
 const { CLIENT_ID, REDIRECT_URI, CLIENT_ID_2, REDIRECT_URI_SERVER, CLIENT_SERVER_ID_1 } = require('./constants.js');
+
+(async () => {
+    const fetch = (await import('node-fetch')).default;
+
+    const response = await fetch('https://api.example.com');
+    const data = await response.json();
+    console.log(data);
+  })();
 
 const { log } = Apify.utils;
 
