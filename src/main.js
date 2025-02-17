@@ -1,6 +1,7 @@
 const Apify = require('apify');
 const { google } = require('googleapis');
-const { apifyGoogleAuth } = require('apify-google-auth');
+const { OAuth2Client } = require('google-auth-library');
+const fetch = require('node-fetch');
 
 const processMode = require('./modes.js');
 const { loadFromApify, loadFromSpreadsheet } = require('./loaders.js');
@@ -27,11 +28,11 @@ const getSpreadsheetClientV2 = async (input) => {
         credentials: credentialsFromApi.data.data,
     });
 
-    console.log(`client: ${JSON.stringify(client)}`);
+    log.info(`PHASE - GETTING CLIENT: ${JSON.stringify(client)}`);
 
     return {
         client,
-        spreadsheetClient: sheets({ version: 'v4', auth: client })
+        spreadsheetClient: google.sheets({ version: 'v4', auth: client })
     }
 }
 
@@ -98,26 +99,26 @@ Apify.main(async () => {
     const { rawData, transformFunction } = await validateAndParseInput(input);
     log.info('Input parsed...');
 
-    let auth;
-    if (!publicSpreadsheet) {
-        // Authenticate
-        log.info('\nPHASE - AUTHORIZATION\n');
-        const authOptions = {
-            scope: 'spreadsheets',
-            tokensStore,
-            credentials: googleCredentials,
-        };
+    // let auth;
+    // if (!publicSpreadsheet) {
+    //     // Authenticate
+    //     log.info('\nPHASE - AUTHORIZATION\n');
+    //     const authOptions = {
+    //         scope: 'spreadsheets',
+    //         tokensStore,
+    //         credentials: googleCredentials,
+    //     };
 
-        try {
-            auth = await apifyGoogleAuth(authOptions);
-        } catch (e) {
-            log.error('Authorization failed! Ensure that you are signing up with the same account where the spreadsheet is located!');
-            throw e;
-        }
-        log.info('Authorization completed...');
-    } else {
-        log.info('\nPHASE - SKIPPING AUTHORIZATION (public spreadsheet)\n');
-    }
+    //     try {
+    //         auth = await apifyGoogleAuth(authOptions);
+    //     } catch (e) {
+    //         log.error('Authorization failed! Ensure that you are signing up with the same account where the spreadsheet is located!');
+    //         throw e;
+    //     }
+    //     log.info('Authorization completed...');
+    // } else {
+    //     log.info('\nPHASE - SKIPPING AUTHORIZATION (public spreadsheet)\n');
+    // }
 
     // Load sheets metadata
     log.info('\nPHASE - LOADING SPREADSHEET METADATA\n');
