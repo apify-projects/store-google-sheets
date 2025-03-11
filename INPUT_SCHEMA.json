@@ -4,6 +4,12 @@
     "schemaVersion": 1,
     "required": [],
     "properties": {
+        "oAuthAccount.HOH4b9Xl3afx0uhkM": {
+            "title": "Google Account Id",
+            "description": "Google Account Id",
+            "type": "string",
+            "editor": "textfield"
+        },
         "mode": {
             "title": "Mode",
             "type": "string",
