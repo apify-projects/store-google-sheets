@@ -1,4 +1,4 @@
-const Apify = require('apify');
+const {} = require('apify');
 const csvParser = require('csvtojson');
 
 const { log } = Apify.utils;

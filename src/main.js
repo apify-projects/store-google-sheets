@@ -1,4 +1,4 @@
-const Apify = require('apify');
+const { Actor, log } = require('apify');
 const { google } = require('googleapis');
 const { apifyGoogleAuth } = require('apify-google-auth');
 const { OAuth2Client } = require('google-auth-library');
@@ -33,8 +33,8 @@ const getSpreadsheetClientV2 = async (input) => {
     return google.sheets({ version: 'v4', auth: client })
 }
 
-Apify.main(async () => {
-    const input = await Apify.getValue('INPUT');
+Actor.main(async () => {
+    const input = await Actor.getValue('INPUT');
     log.info('Input:', { ...input, parsedData: 'not displayed, check input tab directly...', googleCredentials: 'not diplayed, check input tab directly...' });
 
     log.info('\nPHASE - PARSING INPUT\n');
