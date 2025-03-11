@@ -1,4 +1,4 @@
-const Apify = require('apify');
+const { Actor } = require('apify');
 const csvParser = require('csvtojson');
 
 const { toObjects } = require('./transformers.js');
@@ -81,22 +81,21 @@ module.exports.parseRawData = async ({ mode, rawData }) => {
 
         console.log('Raw data have nested structures. We need to use Apify API to flatten them, this may take a while on large structures. If you don\'t have Apify account, this will not work'); // eslint-disable-line
 
-        if (Apify.isAtHome()) {
-            await Apify.pushData(rawData);
+        if (Actor.isAtHome()) {
+            await Actor.pushData(rawData);
             return loadFromApify({ mode, datasetId: process.env.APIFY_DEFAULT_DATASET_ID });
         }
 
-        const { datasets } = Apify.client;
-        const datasetCollectionClient = Apify.newClient().datasets;
+        const datasetCollectionClient = Actor.newClient().datasets;
 
         let { id, itemCount } = await datasetCollectionClient.getOrCreate('spreadsheet-temporary-container');
         if (itemCount > 0) {
-            const datasetClient = Apify.newClient().dataset(id);
+            const datasetClient = Actor.newClient().dataset(id);
             await datasetClient.delete();
             id = await datasetCollectionClient.getOrCreate('spreadsheet-temporary-container')
                 .then((res) => res.id);
         }
-        const datasetClient = Apify.newClient().dataset(id);
+        const datasetClient = Actor.newClient().dataset(id);
         await datasetClient.pushItems(rawData);
 
         const csv = (await datasetClient.downloadItems('csv')).toString();

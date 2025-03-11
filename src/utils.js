@@ -1,8 +1,6 @@
-const Apify = require('apify');
+const { log, Actor } = require('apify');
 
 const { sortPropertyNames } = require('./tabulation');
-
-const { log } = Apify.utils;
 
 const ERRORS_TO_RETRY = [
     'The service is currently unavailable',
@@ -36,7 +34,7 @@ exports.retryingRequest = async (type, request) => {
             const willRetry = ERRORS_TO_RETRY.some((errorMessage) => e.message.includes(errorMessage));
             if (willRetry) {
                 log.warning(`Retrying API call for ${type} to google with attempt n. ${i + 1} for error: ${e.message}`);
-                await Apify.utils.sleep(sleepMs);
+                await new Promise((res) => setTimeout(res, sleepMs));
                 sleepMs *= SLEEP_MULTIPLIER;
             } else {
                 const error = getNiceErrorMessage(type, e.message);
@@ -95,7 +93,7 @@ module.exports.saveBackup = async (createBackup, values) => {
     if (createBackup) {
         if (values) {
             log.info('Saving backup...');
-            await Apify.setValue('backup', values);
+            await Actor.setValue('backup', values);
         } else {
             log.warning('There are currently no rows in the spreadsheet so we will not save backup...');
         }

@@ -1,4 +1,4 @@
-const Apify = require('apify');
+const { Actor } = require('apify');
 
 const { toRows, toObjects, updateRowsObjects } = require('./transformers.js');
 
@@ -15,7 +15,7 @@ module.exports = async ({ mode, values, newObjects, deduplicateByField, deduplic
         const replacedObjects = updateRowsObjects({ oldObjects, deduplicateByField, deduplicateByEquality, transformFunction, columnsOrder, keepSheetColumnOrder });
 
         if (mode === 'read') {
-            await Apify.setValue('OUTPUT', replacedObjects);
+            await Actor.setValue('OUTPUT', replacedObjects);
             console.log('Data were read, processed and saved as OUTPUT to the default key-value store');
             process.exit(0);
         }
@@ -27,7 +27,7 @@ module.exports = async ({ mode, values, newObjects, deduplicateByField, deduplic
         return toRows(appendedObjects);
     }
     if (mode === 'load backup') {
-        const store = await Apify.openKeyValueStore(backupStore);
+        const store = await Actor.openKeyValueStore(backupStore);
         if (!store) {
             throw new Error('Backup store not found under id/name:', backupStore);
         }

@@ -1,7 +1,5 @@
-const {} = require('apify');
+const { Actor, log } = require('apify');
 const csvParser = require('csvtojson');
-
-const { log } = Apify.utils;
 
 const { retryingRequest } = require('./utils.js');
 
@@ -16,7 +14,7 @@ module.exports.loadFromApify = async ({ mode, datasetId, limit, offset }) => {
         clean: true,
     };
 
-    const datasetClient = Apify.newClient().dataset(datasetId);
+    const datasetClient = Actor.newClient().dataset(datasetId);
     let datasetInfo;
     try {
         datasetInfo = await datasetClient.get();
@@ -32,7 +30,7 @@ module.exports.loadFromApify = async ({ mode, datasetId, limit, offset }) => {
         const limitStr = limit ? `&limit=${limit}` : '';
         const offsetStr = offset ? `&offset=${offset}` : '';
         const url = `https://api.apify.com/v2/datasets/${datasetId}/items?format=csv&simplified=true&clean=true${limitStr}${offsetStr}`;
-        csv = await Apify.utils.requestAsBrowser({ url }).then((res) => res.body.toString());
+        csv = await fetch(url).then((res) => res.text());
     } else {
         csv = await datasetClient.downloadItems('csv', {
             ...defaultOptions,

@@ -10,8 +10,6 @@ const { saveBackup, retryingRequest, createSheetRequest } = require('./utils.js'
 const validateAndParseInput = require('./validate-parse-input.js');
 const { CLIENT_ID, REDIRECT_URI, CLIENT_ID_2, REDIRECT_URI_SERVER, CLIENT_SERVER_ID_1 } = require('./constants.js');
 
-const { log } = Apify.utils;
-
 const MAX_CELLS = 5 * 1000 * 1000;
 
 const getSpreadsheetClientV2 = async (input) => {
