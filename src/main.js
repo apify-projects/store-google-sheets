@@ -109,6 +109,7 @@ Actor.main(async () => {
             };
 
             try {
+                // TODO: Upgrade apify-google-auth library for SDK v3
                 auth = await apifyGoogleAuth(authOptions);
             } catch (e) {
                 log.error('Authorization failed! Ensure that you are signing up with the same account where the spreadsheet is located!');
