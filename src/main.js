@@ -21,8 +21,8 @@ const getSpreadsheetClientV2 = async (input) => {
 
     const client = new OAuth2Client({
         // from google console app, put in process env
-        clientId: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
+        clientId: process.env.OFFICIAL_CLIENT_ID,
+        clientSecret: process.env.OFFICIAL_CLIENT_SECRET,
         credentials: credentialsFromApi.data.data,
     });
 
@@ -94,10 +94,6 @@ Actor.main(async () => {
     if (input['oAuthAccount.HOH4b9Xl3afx0uhkM']) {
         client = await getSpreadsheetClientV2(input);
     } else {
-        delete process.env.API_KEY;
-        delete process.env.CLIENT_SECRET;
-        delete process.env.CLIENT_SECRET_2;
-        delete process.env.CLIENT_SECRET_SERVER_1;
         let auth;
         if (!publicSpreadsheet) {
             // Authenticate
@@ -124,6 +120,14 @@ Actor.main(async () => {
         log.info('\nPHASE - LOADING SPREADSHEET METADATA\n');
         client = google.sheets({ version: 'v4', auth: auth || apiKey });
     }
+
+    // Delete all env vars so they are not accessible in the transform functions
+    delete process.env.API_KEY;
+    delete process.env.CLIENT_SECRET;
+    delete process.env.CLIENT_SECRET_2;
+    delete process.env.CLIENT_SECRET_SERVER_1;
+    delete process.env.OFFICIAL_CLIENT_ID;
+    delete process.env.OFFICIAL_CLIENT_SECRET;
 
     const spreadsheetMetadata = await retryingRequest('Getting spreadsheet metadata', async () => client.spreadsheets.get({ spreadsheetId }));
     const sheetsMetadata = spreadsheetMetadata.data.sheets.map((sheet) => sheet.properties);
