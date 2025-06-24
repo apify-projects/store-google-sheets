@@ -88,7 +88,7 @@ Actor.main(async () => {
     // We have to do this to get rid of the global env var so it cannot be stolen in the user provided transform function
     const apiKey = process.env.API_KEY;
 
-    const { rawData, transformFunction } = await validateAndParseInput(input);
+    const { rawData, transformFunction } = await validateAndParseInput({ ...input, spreadsheetId });
 
     log.info('\nPHASE - AUTHORIZATION\n');
 
