@@ -3,7 +3,6 @@ const { evalFunction } = require('./utils.js');
 
 module.exports = async (input) => {
     const {
-        spreadsheetId,
         publicSpreadsheet = false,
         mode,
         datasetId,
@@ -14,6 +13,8 @@ module.exports = async (input) => {
         googleCredentials,
         columnsOrder,
     } = input;
+
+    const spreadsheetId = input['sheetId.eFPUdxsL7X2cdSvE2'];
 
     const parsedRawData = await parseRawData({ mode, rawData });
 

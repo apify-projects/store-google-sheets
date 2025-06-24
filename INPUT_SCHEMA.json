@@ -4,9 +4,15 @@
     "schemaVersion": 1,
     "required": [],
     "properties": {
-        "oAuthAccount.HOH4b9Xl3afx0uhkM": {
+        "oAuthAccount.eFPUdxsL7X2cdSvE2": {
             "title": "Google Account Id",
             "description": "Google Account Id",
+            "type": "string",
+            "editor": "textfield"
+        },
+        "sheetId.eFPUdxsL7X2cdSvE2": {
+            "title": "Spreadsheet id",
+            "description": "Spreadsheet from where the old data will be loaded",
             "type": "string",
             "editor": "textfield"
         },
@@ -16,12 +22,6 @@
             "description": "What should the actor do",
             "enum": ["append", "replace", "modify", "read", "load backup"],
             "default": "append"
-        },
-        "spreadsheetId": {
-            "title": "Spreadsheet id",
-            "type": "string",
-            "description": "Id of the spreadsheet from where the old data will be loaded",
-            "editor": "textfield"
         },
         "publicSpreadsheet": {
             "title": "Public spreadsheet (read-only)",
