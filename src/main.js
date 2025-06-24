@@ -81,7 +81,9 @@ Actor.main(async () => {
         },
     } = input;
 
-    const spreadsheetId = input['sheetId.eFPUdxsL7X2cdSvE2'];
+    // input['sheetId.eFPUdxsL7X2cdSvE2'] creates UI for Google's Drive picker in the schema editor
+    // input.spreadsheetId is the deprecated simple textfield, we keep it for backward compatibility
+    const spreadsheetId = input['sheetId.eFPUdxsL7X2cdSvE2'] || input.spreadsheetId;
 
     // We have to do this to get rid of the global env var so it cannot be stolen in the user provided transform function
     const apiKey = process.env.API_KEY;

@@ -11,7 +11,7 @@
             "editor": "textfield"
         },
         "sheetId.eFPUdxsL7X2cdSvE2": {
-            "title": "Spreadsheet id",
+            "title": "Spreadsheet ID",
             "description": "Spreadsheet from where the old data will be loaded",
             "type": "string",
             "editor": "textfield"
@@ -22,12 +22,6 @@
             "description": "What should the actor do",
             "enum": ["append", "replace", "modify", "read", "load backup"],
             "default": "append"
-        },
-        "publicSpreadsheet": {
-            "title": "Public spreadsheet (read-only)",
-            "type": "boolean",
-            "description": "If checked, you don't need to authorize. You have to publish your spreadsheet and it works only in read mode",
-            "default": false
         },
         "datasetId": {
             "title": "Dataset ID",
@@ -97,13 +91,6 @@
             "type": "boolean",
             "description": "If true, keeps the order of columns as they are in the sheet. If there is no sheet data yet, this does nothing."
         },
-        "tokensStore": {
-            "title": "Google OAuth tokens store",
-            "type": "string",
-            "description": "Key-value store where your Google OAuth tokens will be stored so you don't have to authorize every time again. By default it is google-oauth-tokens",
-            "editor": "textfield",
-            "default": "google-oauth-tokens"
-        },
         "createBackup":{
             "title": "Create backup",
             "type": "boolean",
@@ -112,13 +99,34 @@
         "backupStore": {
             "title": "Backup store id",
             "type": "string",
-            "description": "Id of the key-value store where the backup you want to load is located. Can pnly be used if mode is 'load-backup'",
+            "description": "Id of the key-value store where the backup you want to load is located. Can only be used if mode is 'load-backup'",
             "editor": "textfield"
+        },
+        "spreadsheetId": {
+            "title": "Spreadsheet ID (deprecated)",
+            "type": "string",
+            "description": "Id of the spreadsheet from where the old data will be loaded",
+            "editor": "textfield",
+            "sectionCaption": "Deprecated Auth options",
+            "sectionDescription": "If you are a new user, you should skip this section and use the 'Connect Google Account to your Actor' and 'Select file from Google Drive' inputs instead.\n\n This section is only intended for users who already authorized with the old version (where authorization happened using the Live View tab during the Actor run. If you are one of these users, you can keep using the Spreadsheet ID input and it should continue to work long-term. However, you can always switch to the new official authorization inputs which have preference over the old auth."
+        },
+        "publicSpreadsheet": {
+            "title": "Public spreadsheet (read-only)",
+            "type": "boolean",
+            "description": "If checked, you don't need to authorize. You have to publish your spreadsheet and it works only in read mode",
+            "default": false
+        },
+        "tokensStore": {
+            "title": "Google OAuth tokens store (deprecated)",
+            "type": "string",
+            "description": "Key-value store where your Google OAuth tokens will be stored so you don't have to authorize every time again. By default it is google-oauth-tokens",
+            "editor": "textfield",
+            "default": "google-oauth-tokens"
         },
         "googleCredentials": {
             "title": "Google Developer Console credentials",
             "type": "object",
-            "description": "If you want to use this actor locally or with your own version, you have to provide your own crednetials. Check actor readme for more information.",
+            "description": "If you want to use this actor locally or with your own version, you have to provide your own credentials. Check actor readme for more information.",
             "editor": "json"
         }
     }
