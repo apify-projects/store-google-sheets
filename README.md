@@ -1,21 +1,3 @@
-
-# Google Sheets Import & Export Data
-
-- [Why use Google Sheets Import & Export](#why-use-google-sheets-import-and-export)
-- [How to use Google Sheets Import & Export](#how-to-use-google-sheets-import-and-export)
-- [Input settings](#input-settings)
-- [Limits](#limits)
-- [Authentication and authorization](#authentication-and-authorization)
-- [Public spreadsheet (no authorization)](#public-spreadsheet-no-authorization)
-- [Local usage](#local-usage)
-- [Important tips](#important-tips)
-- [Modes](#modes)
-- [Raw data import](#raw-data-import)
-- [Raw data table format (array of arrays)](#raw-data-table-format-array-of-arrays)
-- [Dataset format (array of objects)](#dataset-format-array-of-objects)
-- [Further reading](#further-reading)
-- [Changelog](#changelog)
-
 ## Why use Google Sheets Import and Export?
 If you're looking for an easy way to import and export data from datasets across multiple Google sheets, Google Sheets Import & Export is the Apify automation tool for you. 
 
@@ -23,60 +5,18 @@ It can process data in your current spreadsheet, import new data from [Apify dat
 
 You can use this actor with any programming language of your choice by calling [Apify API](https://www.apify.com/docs/api/v2).
 
-## How to use Google Sheets Import and Export
-We have an in-depth [tutorial](https://blog.apify.com/google-sheets-import-data/) on how to use this tool.
-
 ## Input settings
-You can specify the following settings:
-- Mode
-- Spreadsheet id
-- Public spreadsheet (read-only)
-- Dataset ID
-- Raw data
-- Limit items
-- Offset items
-- Deduplicate by field
-- Deduplicate by equality
-- Transform function
-- Range
-- Columns order
-- Keep column order from sheet
-- Google OAuth tokens store
-- Create backup
-- Backup store id
-- Google Developer Console credentials
-
 For a complete description of all settings, see [input specification](https://apify.com/lukaskrivka/google-sheets/input-schema).
 
 ## Limits
-If you exceed these limits, the actor run will fail, and no data will be imported.
-- **Maximum runs (imports) per 100 seconds: 100**
+Google limits how many sheet reads or updates (one Actor run is generally one read or update) you can do per minute. If you exceed these limits, the actor run will fail, and no data will be imported.
+- **Maximum sheet reads/updates: 60 per minute.**
+- **Maximum cells in a spreadsheet: 5 million.** - If you try to import data over this limit, the actor will throw an error and not import anything. In this case, use more spreadsheets.
 
 ## Authentication and authorization
-If you are using this actor for the first time, you have to log in with the Google account where the spreadsheet is located. You then need to authorize Apify to work with your spreadsheets. Internally at Apify, we use our small npm package [apify-google-auth](https://www.npmjs.com/package/apify-google-auth). Please check this [article](https://help.apify.com/en/articles/2424053-google-integration) on how to handle the authorization process.
-
-After authorization, tokens are stored in your key-value store, and you don't need to authorize again. So, after the first usage, you can fully automate the actor.
-
-**Please note that Google gradually makes it harder to authenticate and it is possible it will not work for you at all. Try a different gmail, a company one rather then personal, or use directly our [integration](https://apify.com/integrations) for Google drive.**
-
-## Public spreadsheet (no authorization)
-If you don't mind publishing your spreadsheet, you can use this actor without authorization for **read mode**. 
-Simply set the input **publicSpreadsheet** to **"true"**. 
-
-To protect against the abuse of Apify's unofficial Google API, a public spreadsheet without authorization will only work on the Apify platform by using a secret environment variable. 
-
-If you want to run the public mode locally, you have to create your project in the Google console and pass an API_KEY environment variable to your actor process. 
-
-Example:
-**API_KEY=AIzaSyAPijSDFsdfSSf3kvGVsdfsdfsdsdnAVbcZb5Y apify run -p**
-
-## Local usage
-The official actor relies on the CLIENT_SECRET environment variable being set. This assures that official API integration is used. 
-
-If you want to use this actor locally or fork the source code, you will need to create your own project in [Google Developer Console](https://console.developers.google.com/), create your own credentials, and pass them correctly to the **googleCredentials** input variable. This is explained further in the [Apify Google Auth library](https://www.npmjs.com/package/apify-google-auth).
+If you are using this actor for the first time, you have to connect your Google account via the `Connect Google Account to your Actor` input field. This will allow you to pick a spreadsheet from that account. You can have multiple Google accounts connected, and you can switch between them in the Actor input.
 
 ## Important tips
-* The maximum number of cells in the whole spreadsheet is 2 million! If the actor ever tries to import data over this limit, it will just throw an error, finish and not import anything. In this case, use more spreadsheets.
 
 * No matter which mode you choose, the actor recalculates how the data should be positioned in the sheet, updates all the cells, and then trims the exceeding rows and columns. This ensures that the sheet always has the optimal number of rows and columns and there is enough space for the newly generated data.
 
@@ -159,10 +99,3 @@ _Flattened_:
 ]
 
 ```
-## Further reading
-If you want a much deeper understanding of how this actor works, consult [Google Sheets for developers](https://developers.google.com/sheets/api/).
-
-
-## Changelog
-A detailed list of changes is in the [CHANGELOG.md](https://github.com/metalwarrior665/actor-google-sheets/blob/master/CHANGELOG.md) file.
-
