@@ -1,0 +1,9 @@
+{
+	"actorSpecification": 1,
+	"environmentVariables": {
+		"npm_config_loglevel": "silent"
+	},
+	"name": "google-oauth2",
+	"version": "0.1",
+	"buildTag": "latest"
+}
