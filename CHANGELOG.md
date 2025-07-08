@@ -1,4 +1,7 @@
-## Version 2
+#### 2025-07-08
+** Features **
+- Authorization works again for all new users! Finally, we implemented the long-awaited official OAuth support that makes authorization much easier and reliable. You now need to just connect your Google account once to Apify and then pick your spreadsheet in the input.
+
 #### 2022-03-03
 - Migrated to new SDK version which caused crashes for one day until hotfixed.
 - Better error messages
