@@ -37,8 +37,8 @@ exports.retryingRequest = async (type, request) => {
                 await new Promise((res) => setTimeout(res, sleepMs));
                 sleepMs *= SLEEP_MULTIPLIER;
             } else {
-                const error = getNiceErrorMessage(type, e.message);
-                throw error;
+                log.error(getNiceErrorMessage(type, e.message));
+                throw e;
             }
         }
     }
