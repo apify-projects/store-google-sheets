@@ -28,11 +28,11 @@ module.exports = async (input) => {
         && parsedRawData.length === 0
     ) {
         throw await Actor.fail(`INVALID INPUT! - datasetId field needs to be a string with 17 characters! `
-            + `Instead got '${datasetId}' with ${datasetId.length} characters`);
+            + `Instead got '${datasetId}' with ${datasetId?.length || 0} characters`);
     }
     if (mode !== 'load backup' && (typeof spreadsheetId !== 'string' || spreadsheetId.length !== 44)) {
         throw await Actor.fail(`INVALID INPUT! - spreadsheetId field needs to be a string with 44 characters! `
-            + `Instead got '${spreadsheetId}' with ${spreadsheetId.length} characters`);
+            + `Instead got '${spreadsheetId}' with ${spreadsheetId?.length || 0} characters`);
     }
     if (deduplicateByEquality && deduplicateByField) {
         throw await Actor.fail('INVALID INPUT! - deduplicateByEquality and deduplicateByField cannot be used together!');
