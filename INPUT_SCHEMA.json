@@ -26,8 +26,10 @@
         "datasetId": {
             "title": "Dataset ID",
             "type": "string",
-            "description": "Dataset or crawler execution id where the new data will be loaded from",
-            "editor": "textfield",
+            "description": "Dataset ID where the new data will be loaded from",
+            "editor": "resourcePicker",
+            "resourceType": "dataset",
+            "resourcePermissions": ["READ"],
             "sectionCaption": "Input data",
             "sectionDescription": "Only fill in for `append` or `replace` mode. Choose either `Dataset ID` or `Raw data`. Limit and offset is optional."
         },

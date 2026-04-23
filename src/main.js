@@ -92,6 +92,10 @@ Actor.main(async () => {
 
     log.info('\nPHASE - AUTHORIZATION\n');
 
+    // Backward compatibility tracking of how many users use old auth so we can let them know to switch, remove after limited permission
+    // We track this here because we only care to report if the whole run succeeded
+    let usedDeprecatedAuth = false;
+
     let client;
     if (input['oAuthAccount.eFPUdxsL7X2cdSvE2']) {
         client = await getSpreadsheetClientV2(input);
@@ -107,6 +111,7 @@ Actor.main(async () => {
 
             try {
                 auth = await apifyGoogleAuth(authOptions);
+                usedDeprecatedAuth = true;
             } catch (e) {
                 log.error('Authorization failed! Ensure that you are signing up with the same account where the spreadsheet is located!');
                 throw e;
@@ -208,4 +213,13 @@ Actor.main(async () => {
     log.info('\nPHASE - ACTOR FINISHED\n');
     log.info('URL of the updated spreadsheet:');
     log.info(`https://docs.google.com/spreadsheets/d/${spreadsheetId}`);
+
+    // Report usage of deprecated auth
+    if (usedDeprecatedAuth) {
+        await Actor.newClient({ token: process.env.TEMPORARY_DEPREC_REPORTING_TOKEN }).dataset('wYuoafdKhCfQjRMdN').pushItems([{
+            date: new Date().toISOString(),
+            runId: Actor.getEnv().runId,
+            userId: Actor.getEnv().userId,
+        }]);
+    }
 });
