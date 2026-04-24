@@ -206,14 +206,15 @@ Actor.main(async () => {
         log.info('Backup saved...');
     }
 
-    // Upload to spreadsheet
-    log.info('\nPHASE - UPLOADING TO SPREADSHEET\n');
-    await upload({ spreadsheetId, spreadsheetRange, rowsToInsert, values, client, targetSheetId, maxCells: MAX_CELLS });
-    log.info('Data uploaded...');
-
-    log.info('\nPHASE - ACTOR FINISHED\n');
-    log.info('URL of the updated spreadsheet:');
-    log.info(`https://docs.google.com/spreadsheets/d/${spreadsheetId}`);
+    if (rowsToInsert) {
+        // Upload to spreadsheet
+        log.info('\nPHASE - UPLOADING TO SPREADSHEET\n');
+        await upload({ spreadsheetId, spreadsheetRange, rowsToInsert, values, client, targetSheetId, maxCells: MAX_CELLS });
+        log.info('Data uploaded...');
+        log.info('\nPHASE - ACTOR FINISHED\n');
+        log.info('URL of the updated spreadsheet:');
+        log.info(`https://docs.google.com/spreadsheets/d/${spreadsheetId}`);
+    }
 
     // Report usage of deprecated auth
     if (usedDeprecatedAuth) {

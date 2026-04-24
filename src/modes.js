@@ -17,7 +17,7 @@ module.exports = async ({ mode, values, newObjects, deduplicateByField, deduplic
         if (mode === 'read') {
             await Actor.setValue('OUTPUT', replacedObjects);
             console.log('Data were read, processed and saved as OUTPUT to the default key-value store');
-            process.exit(0);
+            return;
         }
         return toRows(replacedObjects);
     }
