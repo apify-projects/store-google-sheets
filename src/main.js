@@ -110,6 +110,7 @@ Actor.main(async () => {
             };
 
             try {
+                Actor.setStatusMessage('You are using deprecated authentication method. Please switch to configuring your account and sheet in the input tab.').catch(() => {});
                 auth = await apifyGoogleAuth(authOptions);
                 usedDeprecatedAuth = true;
             } catch (e) {
@@ -216,6 +217,7 @@ Actor.main(async () => {
 
     // Report usage of deprecated auth
     if (usedDeprecatedAuth) {
+        log.info('Reporting usage of deprecated authentication method for backward compatibility tracking');
         await Actor.newClient({ token: process.env.TEMPORARY_DEPREC_REPORTING_TOKEN }).dataset('wYuoafdKhCfQjRMdN').pushItems([{
             date: new Date().toISOString(),
             runId: Actor.getEnv().runId,
