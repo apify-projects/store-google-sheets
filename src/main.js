@@ -221,7 +221,7 @@ Actor.main(async () => {
         log.info('Reporting usage of deprecated authentication method for backward compatibility tracking');
         await Actor.newClient({ token: process.env.TEMPORARY_DEPREC_REPORTING_TOKEN }).dataset('wYuoafdKhCfQjRMdN').pushItems([{
             date: new Date().toISOString(),
-            runId: Actor.getEnv().runId,
+            runId: Actor.getEnv().actorRunId,
             userId: Actor.getEnv().userId,
         }]);
     }
