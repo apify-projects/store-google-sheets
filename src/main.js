@@ -141,7 +141,7 @@ Actor.main(async () => {
     log.info(`name of the first sheet: ${firstSheetName}`);
     log.info(`id of the first sheet: ${firstSheetId}`);
 
-    const spreadsheetRange = range || firstSheetName;
+    const spreadsheetRangeObj = { range, firstSheetName };
 
     // This is important for trimming excess rows/columns
     let targetSheetId;
@@ -168,7 +168,7 @@ Actor.main(async () => {
     log.info('\nPHASE - SPREADSHEET SETUP:\n');
     log.info(`Mode: ${mode}`);
     log.info(`Spreadsheet id: ${spreadsheetId}`);
-    log.info(`Range: ${spreadsheetRange}`);
+    log.info(`Range: ${spreadsheetRangeObj.range || spreadsheetRangeObj.firstSheetName}`);
     log.info(`Deduplicate by field: ${deduplicateByField || false}`);
     log.info(`Deduplicated by equality: ${deduplicateByEquality || false}\n`);
 
@@ -181,7 +181,7 @@ Actor.main(async () => {
 
     // Load data from spreadsheet
     log.info('\nPHASE - LOADING DATA FROM SPREADSHEET\n');
-    const values = await loadFromSpreadsheet({ client, spreadsheetId, spreadsheetRange });
+    const values = await loadFromSpreadsheet({ client, spreadsheetId, spreadsheetRange: spreadsheetRangeObj.range || spreadsheetRangeObj.firstSheetName });
     log.info(`${values ? values.length : 0} rows loaded from spreadsheet`);
 
     // Processing data (different for each mode)
@@ -209,7 +209,7 @@ Actor.main(async () => {
     if (rowsToInsert) {
         // Upload to spreadsheet
         log.info('\nPHASE - UPLOADING TO SPREADSHEET\n');
-        await upload({ spreadsheetId, spreadsheetRange, rowsToInsert, values, client, targetSheetId, maxCells: MAX_CELLS });
+        await upload({ spreadsheetId, spreadsheetRangeObj, rowsToInsert, values, client, targetSheetId, maxCells: MAX_CELLS });
         log.info('Data uploaded...');
         log.info('\nPHASE - ACTOR FINISHED\n');
         log.info('URL of the updated spreadsheet:');
