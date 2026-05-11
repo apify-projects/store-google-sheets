@@ -1,22 +1,70 @@
-const { countCells, trimSheetRequest, retryingRequest } = require('./utils');
+const { Actor } = require('apify');
 
-module.exports = async ({ maxCells, rowsToInsert, spreadsheetId, spreadsheetRange, values, client, targetSheetId }) => {
+const { countCells, trimSheetRequest, retryingRequest, parseRange } = require('./utils');
+
+module.exports = async ({ maxCells, rowsToInsert, spreadsheetId, spreadsheetRangeObj, values, client, targetSheetId }) => {
     // ensuring max cells limit
     const cellsToInsert = countCells(rowsToInsert);
     console.log(`Total rows: ${rowsToInsert.length}, total columns: ${rowsToInsert[0].length} total cells: ${cellsToInsert}`);
     if (cellsToInsert > maxCells) {
-        throw `You reached the max limit of ${maxCells} cells. Try inserting less rows.`;
+        await Actor.fail(`You reached the max limit of ${maxCells} cells. Try inserting less rows.`);
     }
 
-    // inserting cells
-    console.log('Inserting new cells');
-    await retryingRequest('Inserting new rows', async () => client.spreadsheets.values.update({
-        spreadsheetId,
-        range: spreadsheetRange,
-        valueInputOption: 'USER_ENTERED',
-        resource: { values: rowsToInsert },
-    }));
-    console.log('Items inserted...');
+    // Even if we are under cell limit, large requests can get rejected
+    const ROW_CHUNK_SIZE = 5000;
+
+    if (rowsToInsert.length < ROW_CHUNK_SIZE) {
+        // Standard request, we take raw range because we can support all formats
+        // We do this separately so if we introduce chunking bug, it happens only to very large payloads that are rare
+        console.log('Inserting new cells');
+        await retryingRequest('Inserting new rows', async () => client.spreadsheets.values.update({
+            spreadsheetId,
+            range: spreadsheetRangeObj.range || spreadsheetRangeObj.firstSheetName,
+            valueInputOption: 'USER_ENTERED',
+            resource: { values: rowsToInsert },
+        }));
+        console.log('Items inserted...');
+    } else {
+        // Chunking request, we need to parse range to get sheet name and starting row and column
+        console.log('Inserting new cells in chunks');
+        const parsedRange = parseRange(spreadsheetRangeObj);
+        if (!parsedRange) {
+            throw new Error('Cannot parse range for large upload. Range must be in A1 notation and contain sheet name. Example: "Sheet1!A1"');
+        }
+        const { sheetName, startRow = 1, startColumn = 'A' } = parsedRange;
+
+        // The chunking approach requires us to resize the sheet upfront, because subsequent range updates don't resize automatically (Google being weird)
+        await retryingRequest('Resizing sheet for chunked upload', async () => client.spreadsheets.batchUpdate({
+            spreadsheetId,
+            resource: {
+                requests: [{
+                    updateSheetProperties: {
+                        properties: {
+                            sheetId: targetSheetId,
+                            gridProperties: {
+                                rowCount: rowsToInsert.length + startRow - 1,
+                            },
+                        },
+                        fields: 'gridProperties.rowCount',
+                    },
+                }],
+            },
+        }));
+        for (let i = 0; i < rowsToInsert.length; i += ROW_CHUNK_SIZE) {
+            const chunk = rowsToInsert.slice(i, i + ROW_CHUNK_SIZE);
+
+            // No sheet name is also valid
+            const chunkRange = sheetName ? `${sheetName}!${startColumn}${startRow + i}` : `${startColumn}${startRow + i}`;
+            console.log(`Inserting chunk of rows ${i} to ${i + chunk.length} at range ${chunkRange}`);
+            await retryingRequest('Inserting new rows in chunks', async () => client.spreadsheets.values.update({
+                spreadsheetId,
+                range: chunkRange,
+                valueInputOption: 'USER_ENTERED',
+                resource: { values: chunk },
+            }));
+        }
+        console.log('Items inserted in chunks...');
+    }
 
     // trimming cells
     console.log('Maybe deleting unused cells');

@@ -2,6 +2,69 @@ const { log, Actor } = require('apify');
 
 const { sortPropertyNames } = require('./tabulation');
 
+// We need to parse range to chunk large uploads
+exports.parseRange = ({ range, firstSheetName }) => {
+    const spreadsheetRange = range || firstSheetName;
+
+    // Helper to parse an optional "Sheet!" prefix
+    const sheetSplit = spreadsheetRange.match(/^([^!]+)!(.+)$/);
+    const sheetName = sheetSplit ? sheetSplit[1] : null;
+    const ref = sheetSplit ? sheetSplit[2] : spreadsheetRange;
+
+    // A1:B2 — cell range
+    const cellRangeMatch = ref.match(/^([A-Z]+)(\d+):([A-Z]+)(\d+)$/);
+    if (cellRangeMatch) {
+        return {
+            ...(sheetName && { sheetName }),
+            startColumn: cellRangeMatch[1],
+            startRow: Number(cellRangeMatch[2]),
+            endColumn: cellRangeMatch[3],
+            endRow: Number(cellRangeMatch[4]),
+        };
+    }
+
+    // A:B — full columns
+    const colRangeMatch = ref.match(/^([A-Z]+):([A-Z]+)$/);
+    if (colRangeMatch) {
+        return {
+            ...(sheetName && { sheetName }),
+            startColumn: colRangeMatch[1],
+            endColumn: colRangeMatch[2],
+        };
+    }
+
+    // 1:5 — full rows
+    const rowRangeMatch = ref.match(/^(\d+):(\d+)$/);
+    if (rowRangeMatch) {
+        return {
+            ...(sheetName && { sheetName }),
+            startRow: Number(rowRangeMatch[1]),
+            endRow: Number(rowRangeMatch[2]),
+        };
+    }
+
+    // A1 — single cell
+    const cellMatch = ref.match(/^([A-Z]+)(\d+)$/);
+    if (cellMatch) {
+        return {
+            ...(sheetName && { sheetName }),
+            startColumn: cellMatch[1],
+            startRow: Number(cellMatch[2]),
+        };
+    }
+
+    // Sheet name only (no "!" present)
+    if (!sheetSplit && !spreadsheetRange.includes('!')) {
+        return {
+            sheetName: spreadsheetRange,
+            startColumn: 'A',
+            startRow: 1,
+        };
+    }
+
+    return null;
+}
+
 const ERRORS_TO_RETRY = [
     'The service is currently unavailable',
 ]

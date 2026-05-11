@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const { toObjects, toRows, updateRowsObjects, makeUniqueRows } = require('../src/utils.js');
+const { toObjects, toRows, updateRowsObjects, makeUniqueRows, parseRange } = require('../src/utils.js');
 // const { customTransform1, reconstructArray, pseudoDeepEquals, createKeys } = require('../src/transformFunctions');
 // const { customObjectsNew, customObjectsOld, customObjFlat, customObjFlat2, transformedArray } = require('./mocks');
 
@@ -94,5 +94,188 @@ describe('append', () => {
 describe('makeUniqueRows', () => {
     it('works', () => {
         assert.deepEqual(uniqueToAppend, makeUniqueRows(objects, objects2, 'b', null));
+    });
+});
+
+describe('parseRange', () => {
+    it('parses sheet name only', () => {
+        assert.deepEqual(parseRange({ range: 'Sheet1' }), {
+            sheetName: 'Sheet1',
+            startColumn: 'A',
+            startRow: 1,
+        });
+    });
+
+    it('parses sheet name with spaces', () => {
+        assert.deepEqual(parseRange({ range: 'My Sheet' }), {
+            sheetName: 'My Sheet',
+            startColumn: 'A',
+            startRow: 1,
+        });
+    });
+
+    it('parses sheet name with A1 notation', () => {
+        assert.deepEqual(parseRange({ range: 'Sheet1!A1' }), {
+            sheetName: 'Sheet1',
+            startColumn: 'A',
+            startRow: 1,
+        });
+    });
+
+    it('parses sheet name with offset cell', () => {
+        assert.deepEqual(parseRange({ range: 'Sheet1!C5' }), {
+            sheetName: 'Sheet1',
+            startColumn: 'C',
+            startRow: 5,
+        });
+    });
+
+    it('parses multi-letter column', () => {
+        assert.deepEqual(parseRange({ range: 'Data!AA100' }), {
+            sheetName: 'Data',
+            startColumn: 'AA',
+            startRow: 100,
+        });
+    });
+
+    it('parses sheet name containing special characters with A1', () => {
+        assert.deepEqual(parseRange({ range: 'My Sheet!B2' }), {
+            sheetName: 'My Sheet',
+            startColumn: 'B',
+            startRow: 2,
+        });
+    });
+
+    it('parses full range A1:B2', () => {
+        assert.deepEqual(parseRange({ range: 'Sheet1!A1:B2' }), {
+            sheetName: 'Sheet1',
+            startColumn: 'A',
+            startRow: 1,
+            endColumn: 'B',
+            endRow: 2,
+        });
+    });
+
+    it('parses full range with multi-letter columns', () => {
+        assert.deepEqual(parseRange({ range: 'Data!AA1:ZZ100' }), {
+            sheetName: 'Data',
+            startColumn: 'AA',
+            startRow: 1,
+            endColumn: 'ZZ',
+            endRow: 100,
+        });
+    });
+
+    it('parses full range with spaces in sheet name', () => {
+        assert.deepEqual(parseRange({ range: 'My Sheet!C3:D10' }), {
+            sheetName: 'My Sheet',
+            startColumn: 'C',
+            startRow: 3,
+            endColumn: 'D',
+            endRow: 10,
+        });
+    });
+
+    // Full columns
+    it('parses full columns with sheet name', () => {
+        assert.deepEqual(parseRange({ range: 'Sheet1!A:B' }), {
+            sheetName: 'Sheet1',
+            startColumn: 'A',
+            endColumn: 'B',
+        });
+    });
+
+    it('parses single full column with sheet name', () => {
+        assert.deepEqual(parseRange({ range: 'Sheet1!A:A' }), {
+            sheetName: 'Sheet1',
+            startColumn: 'A',
+            endColumn: 'A',
+        });
+    });
+
+    it('parses full columns without sheet name', () => {
+        assert.deepEqual(parseRange({ range: 'A:B' }), {
+            startColumn: 'A',
+            endColumn: 'B',
+        });
+    });
+
+    it('parses multi-letter full columns', () => {
+        assert.deepEqual(parseRange({ range: 'Sheet1!AA:ZZ' }), {
+            sheetName: 'Sheet1',
+            startColumn: 'AA',
+            endColumn: 'ZZ',
+        });
+    });
+
+    // Full rows
+    it('parses full rows with sheet name', () => {
+        assert.deepEqual(parseRange({ range: 'Sheet1!1:5' }), {
+            sheetName: 'Sheet1',
+            startRow: 1,
+            endRow: 5,
+        });
+    });
+
+    it('parses single full row with sheet name', () => {
+        assert.deepEqual(parseRange({ range: 'Sheet1!1:1' }), {
+            sheetName: 'Sheet1',
+            startRow: 1,
+            endRow: 1,
+        });
+    });
+
+    it('parses full rows without sheet name', () => {
+        assert.deepEqual(parseRange({ range: '1:5' }), {
+            startRow: 1,
+            endRow: 5,
+        });
+    });
+
+    // Without sheet name
+    it('parses single cell without sheet name', () => {
+        assert.deepEqual(parseRange({ range: 'A1' }), {
+            startColumn: 'A',
+            startRow: 1,
+        });
+    });
+
+    it('parses cell range without sheet name', () => {
+        assert.deepEqual(parseRange({ range: 'A1:B2' }), {
+            startColumn: 'A',
+            startRow: 1,
+            endColumn: 'B',
+            endRow: 2,
+        });
+    });
+
+    // firstSheetName fallback
+    it('falls back to firstSheetName when range is not provided', () => {
+        assert.deepEqual(parseRange({ firstSheetName: 'FallbackSheet' }), {
+            sheetName: 'FallbackSheet',
+            startColumn: 'A',
+            startRow: 1,
+        });
+    });
+
+    it('uses range over firstSheetName when both provided', () => {
+        assert.deepEqual(parseRange({ range: 'Sheet1!B3', firstSheetName: 'FallbackSheet' }), {
+            sheetName: 'Sheet1',
+            startColumn: 'B',
+            startRow: 3,
+        });
+    });
+
+    it('falls back to firstSheetName when range is empty string', () => {
+        assert.deepEqual(parseRange({ range: '', firstSheetName: 'FallbackSheet' }), {
+            sheetName: 'FallbackSheet',
+            startColumn: 'A',
+            startRow: 1,
+        });
+    });
+
+    // Errors
+    it('returns null for invalid ref after sheet name', () => {
+        assert.strictEqual(parseRange({ range: 'Sheet1!' }), null);
     });
 });
