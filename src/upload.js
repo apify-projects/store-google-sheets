@@ -32,6 +32,24 @@ module.exports = async ({ maxCells, rowsToInsert, spreadsheetId, spreadsheetRang
             throw new Error('Cannot parse range for large upload. Range must be in A1 notation and contain sheet name. Example: "Sheet1!A1"');
         }
         const { sheetName, startRow = 1, startColumn = 'A' } = parsedRange;
+
+        // The chunking approach requires us to resize the sheet upfront, because subsequent range updates don't resize automatically (Google being weird)
+        await retryingRequest('Resizing sheet for chunked upload', async () => client.spreadsheets.batchUpdate({
+            spreadsheetId,
+            resource: {
+                requests: [{
+                    updateSheetProperties: {
+                        properties: {
+                            sheetId: targetSheetId,
+                            gridProperties: {
+                                rowCount: rowsToInsert.length + startRow - 1,
+                            },
+                        },
+                        fields: 'gridProperties.rowCount',
+                    },
+                }],
+            },
+        }));
         for (let i = 0; i < rowsToInsert.length; i += ROW_CHUNK_SIZE) {
             const chunk = rowsToInsert.slice(i, i + ROW_CHUNK_SIZE);
 
