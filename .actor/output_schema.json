@@ -1,0 +1,13 @@
+{
+    "$schema": "https://apify-projects.github.io/actor-json-schemas/output.json?v=0.3",
+    "actorOutputSchemaVersion": 1,
+    "title": "Output schema of the Actor",
+    "properties": {
+        "processedData": {
+            "type": "string",
+            "title": "Processed data",
+            "description": "Data read from the spreadsheet, available when the Actor runs in the `read` mode.",
+            "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/OUTPUT"
+        }
+    }
+}
